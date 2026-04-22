@@ -1,21 +1,15 @@
 @extends('admin.dashboard')
 
-@section('content')
+@push('styles')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-
 <style>
-    /* Styling tambahan agar menyatu dengan tema profesional putih Anda */
-    .note-editor.note-frame {
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        background-color: #fff;
-    }
-    .note-toolbar {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-    }
+    /* Paksa warna agar tidak nabrak AdminLTE */
+    .note-editor.note-frame { background: white !important; border: 1px solid #ced4da !important; }
+    .note-editable { background: white !important; min-height: 300px !important; color: black !important; }
 </style>
+@endpush
 
+@section('content')
 <div class="card shadow border-0">
     <div class="card-header bg-primary text-white">
         <h3 class="mb-0 h5">Buat Postingan Baru</h3>
@@ -32,17 +26,15 @@
             <div class="mb-3">
                 <label class="fw-bold">Pilih Kategori</label>
                 <select name="category_id" class="form-select" required>
-                    @forelse($categories as $cat)
+                    @foreach($categories as $cat)
                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                    @empty
-                        <option disabled>Kategori masih kosong! Isi di menu Kategori dulu.</option>
-                    @endforelse
+                    @endforeach
                 </select>
             </div>
 
             <div class="mb-3">
                 <label class="fw-bold">Isi Berita</label>
-                <textarea id="summernote" name="content" class="form-control" required></textarea>
+                <textarea id="summernote_editor" name="content"></textarea>
             </div>
 
             <div class="row">
@@ -52,8 +44,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">Upload Gambar Utama</label>
-                    <input type="file" name="image" class="form-control" accept="image/*" required>
-                    <small class="text-muted">Format: JPG, PNG, WEBP (Maks. 2MB)</small>
+                    <input type="file" name="image" class="form-control" accept="image/jpeg, image/png" required>
                 </div>
             </div>
 
@@ -65,41 +56,27 @@
         </form>
     </div>
 </div>
+@endsection
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        $('#summernote').summernote({
-            placeholder: 'Tulis berita lengkap Anda di sini...',
+        console.log("Memulai Summernote...");
+        
+        $('#summernote_editor').summernote({
+            placeholder: 'Tulis berita di sini...',
             tabsize: 2,
-            height: 400, // Ukuran lebih tinggi agar enak menulis
-            lang: 'id-ID', // Set bahasa jika perlu
+            height: 400,
             toolbar: [
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear', 'italic']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
                 ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            callbacks: {
-                // Menghapus tag script otomatis untuk keamanan
-                onChange: function(contents, $editable) {
-                    if (contents.includes('<script>')) {
-                        $(this).summernote('code', contents.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, ""));
-                        alert("Script injection dilarang!");
-                    }
-                }
-            }
+                ['view', ['fullscreen', 'codeview']]
+            ]
         });
-
-        // Menghilangkan bug padding pada toolbar summernote di beberapa template
-        $('.note-editable').css('background', 'white');
     });
 </script>
-@endsection
+@endpush

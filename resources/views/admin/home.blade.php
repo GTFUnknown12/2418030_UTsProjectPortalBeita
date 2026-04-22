@@ -12,7 +12,10 @@
                     <span class="badge bg-warning text-dark mb-2">{{ $item->category->name }}</span>
                     <h5 class="card-title">{{ $item->title }}</h5>
                     <p class="text-muted small">{{ $item->date }}</p>
-                    <p class="card-text">{{ \Illuminate\Support\Str::limit($item->content, 70) }}</p>
+                    
+                    <div class="card-text">
+                        {!! \Illuminate\Support\Str::limit(strip_tags($item->content), 70) !!}
+                    </div>
                 </div>
             </div>
         </div>
